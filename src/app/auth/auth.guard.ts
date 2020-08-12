@@ -9,7 +9,7 @@ export class AuthGuard implements CanActivate {
     constructor(private authService: AuthService,
                 private router: Router) {}
 
-    canActivate (
+    canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ):
@@ -20,11 +20,21 @@ export class AuthGuard implements CanActivate {
         return this.authService.user.pipe(
             take(1),
             map(user => {
+                console.log('route ' + state.url);
                 const isAuth = !!user;
-                if (isAuth) {
+
+                if (state.url === '/auth') {
+                  if (!isAuth) {
                     return true;
+                  }
+                  return this.router.createUrlTree(['/movies']);
+                } else {
+
+                  if (isAuth) {
+                    return true;
+                  }
+                  return this.router.createUrlTree(['/auth']);
                 }
-                return this.router.createUrlTree(['/auth']);
             })
         );
     }

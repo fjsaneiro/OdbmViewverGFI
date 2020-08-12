@@ -7,7 +7,8 @@ import { AlertComponent } from '../shared/alert/alert.component';
 
 @Component({
     selector: 'app-auth',
-    templateUrl: './auth.component.html'
+    templateUrl: './auth.component.html',
+    styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnDestroy {
     isLoginMode = true;
@@ -42,7 +43,7 @@ export class AuthComponent implements OnDestroy {
             console.log(resData);
             this.isLoading = false;
             this.error = null;
-            this.router.navigate(['/tmp']);
+            this.router.navigate(['/movies']);
         }, errorMessage => {
             console.log(errorMessage);
             this.error = errorMessage;
