@@ -1,3 +1,4 @@
+import { MovieDetailsService } from './../services/movie-details.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -22,6 +23,7 @@ export class MovieDetailComponent implements OnInit, OnDestroy {
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
+              private movieDetailsService: MovieDetailsService,
               private movieService: MovieService,
               private loadingService: LoadingService,
               private favoriteService: FavoriteService) { }
@@ -31,8 +33,8 @@ export class MovieDetailComponent implements OnInit, OnDestroy {
       .pipe(
         exhaustMap((params: Params) => {
           this.id = params.id;
-          this.movieService.getMovieDetails(this.id);
-          return this.movieService.detailChanged;
+          this.movieDetailsService.getMovieDetails(this.id);
+          return this.movieDetailsService.detailChanged;
         },
       ))
       .subscribe(

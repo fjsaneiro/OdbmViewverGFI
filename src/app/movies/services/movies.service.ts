@@ -1,18 +1,16 @@
+import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { throwError, Observable, Subscription, Subject } from 'rxjs';
+import { throwError, Observable, Subject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { environment } from './../../../environments/environment';
 import { AuthService } from './../../auth/services/auth.service';
 import { ErrorService } from './../../shared/error.service';
 import { LoadingService } from './../../shared/loading.service';
-import { OmdbMovieDetailResponse } from './../interfaces/OmdbMovieDetailResponse';
-import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
 import { CurrentSearch } from './../interfaces/CurrentSearch';
 
-type httpSubject = Subject<void> | Subject<OmdbMovieDetailResponse>;
 
 @Injectable({providedIn: 'root'})
 export class MovieService {
@@ -25,8 +23,6 @@ export class MovieService {
           this.currentSearch  = null;
           this.lastListVieved  = null;
           this.currentSearchRespone  = null;
-          this.currentDetail  = null;
-          this.currentDetailResponse  = null;
         }
       });
       const json = sessionStorage.getItem('oMDBSearch');
@@ -37,11 +33,8 @@ export class MovieService {
   }
 
   public moviesChanged = new Subject<void>();
-  public detailChanged = new Subject<OmdbMovieDetailResponse>();
 
   private currentSearchRespone: OmdbSearchResponse;
-  private currentDetailResponse: OmdbMovieDetailResponse;
-  public currentDetail: string;
   public currentSearch: CurrentSearch;
   public lastListVieved: string;
 
@@ -98,7 +91,7 @@ export class MovieService {
     this.http
       .get<OmdbSearchResponse>(environment.OmdbAPIURL, { params } )
       .pipe(
-        catchError(this.handleErrorSearch.bind(this)),
+        catchError(this.handleError.bind(this)),
         tap((resData) => {
           this.currentSearchRespone = resData;
           this.moviesChanged.next();
@@ -113,51 +106,10 @@ export class MovieService {
       ).subscribe();
   }
 
-  public getMovieDetails(id: string): void {
-    if (id === null) {
-      this.errorService.setErrorMessage('Argument id not provided');
-      return;
-    }
-
-    this.errorService.clearErrorMessage();
-    this.loadingService.setLoading(true);
-
-    if (id === this.currentDetail && this.currentDetailResponse) {
-      this.detailChanged.next(this.currentDetailResponse);
-      this.loadingService.setLoading(false);
-      return;
-    }
-
-    const params = new HttpParams().append('apikey', environment.OmdbAPIKey)
-                                   .append('type', environment.OmdbAPIType)
-                                   .append('plot', environment.OmdbAPIPlot)
-                                   .append('i', id);
-
-    this.http
-      .get<OmdbMovieDetailResponse>(environment.OmdbAPIURL, { params } )
-      .pipe(
-        catchError(this.handleErrorDetails.bind(this)),
-        tap((resData) => {
-          this.errorService.clearErrorMessage();
-          this.loadingService.setLoading(false);
-          this.detailChanged.next(resData);
-        })
-      ).subscribe();
-  }
-
-  private handleErrorSearch(errorRes: HttpErrorResponse): Observable<never> {
-    return this.handleError(errorRes, this.moviesChanged);
-  }
-
-  private handleErrorDetails(errorRes: HttpErrorResponse): Observable<never> {
-    return this.handleError(errorRes, this.detailChanged);
-  }
-
-  private handleError(errorRes: HttpErrorResponse, subject: httpSubject): Observable<never> {
+  private handleError(errorRes: HttpErrorResponse): Observable<never> {
     const errorMessage = 'An unknown error ocurred';
     this.currentSearchRespone = null;
-    subject.next(null);
-    this.loadingService.setLoading(false);
+    this.moviesChanged.next(null);
     this.errorService.setErrorMessage(errorMessage);
     this.loadingService.setLoading(false);
     return throwError(errorMessage);
