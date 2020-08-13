@@ -1,3 +1,4 @@
+import { Router, UrlTree, ActivatedRoute } from '@angular/router';
 import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
 import { MovieService } from './../movies.service';
 import { NgForm } from '@angular/forms';
@@ -11,9 +12,17 @@ import { Subscription, Observable } from 'rxjs';
 })
 export class MovieSearchComponent implements OnInit {
 
-  constructor(private movieService: MovieService) { }
+  public currentSearch: string;
+  constructor(private movieService: MovieService,
+              private activatedRoute: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit(): void {
+    this.activatedRoute.url.subscribe(url => {
+      if (this.router.url === '/movies') {
+        this.currentSearch = this.movieService.currentSearch;
+      }
+    });
   }
 
   onSubmit(form: NgForm): void {

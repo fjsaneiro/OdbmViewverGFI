@@ -10,6 +10,10 @@ const appRoutes: Routes = [
   {
     path: 'movies',
     loadChildren: () => import('./movies/movies.module').then(m => m.MoviesModule)
+  },
+  {
+    path: 'favorites',
+    loadChildren: () => import('./movies/movies.module').then(m => m.MoviesModule)
   }
 ];
 

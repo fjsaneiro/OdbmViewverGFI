@@ -1,1 +1,98 @@
-<p>movie-detail works!</p>
+<div class="container">
+
+  <div class="row">
+      <div class="col-xs-12">
+        <div class="row">
+            <div class="col-lg-6 jumbotron">
+              <div class="container">
+                <div class="row" *ngIf="details.Title">
+                    <div class="col-xs-12">
+                      <h2>Title : {{ details.Title }}</h2>
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Year">
+                    <div class="col-xs-12">
+                      <label>Year :</label>  {{ details.Year }}
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Rated">
+                    <div class="col-xs-12">
+                      <label>Rated :</label> {{ details.Rated }}
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Released">
+                    <div class="col-xs-12">
+                      <label>Released :</label> {{ details.Released }}
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Runtime">
+                    <div class="col-xs-12">
+                      <label>Runtime :</label> {{ details.Runtime }}
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Genre">
+                    <div class="col-xs-12">
+                      <label>Genre :</label>  {{ details.Genre }}
+                    </div>
+                </div>
+                <div class="row" *ngIf="details.Director">
+                    <div class="col-xs-12">
+                      <label>Director :</label> {{ details.Director }}
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+                <img *ngIf="details.Poster && details.Poster != 'N/A' "
+                  [src] = "details.Poster"
+                  alt = "{{ details.Title }}"
+                  class="img-responsive"
+                  style="max-height:6 00px;">
+            </div>
+        </div>
+        <div class="row jumbotron">
+            <div class="col-xs-12" *ngIf="details.Writer">
+                <label>Writers : {{ details.Writer }}</label>
+            </div>
+            <div class="col-xs-12" *ngIf="details.Actors">
+                <label>Actors : {{ details.Actors }}</label>
+            </div>
+            <div class="col-xs-12" *ngIf="details.Country">
+                <label>Country : {{ details.Country }}</label>
+            </div>
+            <div class="col-xs-12" *ngIf="details.Language">
+                <label>Language : {{ details.Language }}</label>
+            </div>
+            <div class="col-xs-12" *ngIf="details.Plot">
+                <label>{{ details.Plot }}</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row">
+
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            >Remove Favorites</button>
+                     |
+
+                        <button
+                            type="button"
+                            class="btn btn-success"
+                            >Add Favorites</button>
+                    |
+
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            (click)="navigateBack()"
+                            >Back</button>
+
+                </div>
+            </div>
+        </div>
+      </div>
+  </div>
+
+</div>

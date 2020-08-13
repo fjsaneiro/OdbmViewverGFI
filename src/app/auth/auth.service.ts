@@ -15,6 +15,11 @@ export interface AuthResponseData {
     token: string;
 }
 
+export interface AuthBodyRequest {
+  email: string;
+  password: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class AuthService {
     public user = new BehaviorSubject<User>(null);

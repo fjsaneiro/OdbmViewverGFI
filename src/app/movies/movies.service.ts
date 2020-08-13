@@ -7,8 +7,10 @@ import { environment } from './../../environments/environment';
 
 import { ErrorService } from './../shared/error.service';
 import { LoadingService } from './../shared/loading.service';
-import { OmdbMovieResponse } from './interfaces/OmdbMovieResponse';
+import { OmdbMovieDetailResponse } from './interfaces/OmdbMovieDetailResponse';
 import { OmdbSearchResponse } from './interfaces/OmdbSearchResponse';
+
+type httpSubject = Subject<void> | Subject<OmdbMovieDetailResponse>;
 
 @Injectable({providedIn: 'root'})
 export class MovieService {
@@ -16,10 +18,23 @@ export class MovieService {
               private loadingService: LoadingService,
               private errorService: ErrorService) {}
 
-  public moviessChanged = new Subject<OmdbSearchResponse>();
+  public moviessChanged = new Subject<void>();
+  public detailChanged = new Subject<OmdbMovieDetailResponse>();
   public currentSearch: string;
   public currentPage: number;
   private currentSearchRespone: OmdbSearchResponse;
+  private currentDetailResponse: OmdbMovieDetailResponse;
+  public currentDetail: string;
+
+  public getCurrentSearch(): OmdbSearchResponse {
+    return JSON.parse(JSON.stringify(this.currentSearchRespone));
+  }
+
+  public searchMoviesrRepeat(): void {
+    if (this.currentSearch && this.currentPage) {
+      this.searchMovies(this.currentSearch, this.currentPage);
+    }
+  }
 
   public searchMoviesPage(pageNumber: number): void {
     if (this.currentSearch) {
@@ -36,8 +51,11 @@ export class MovieService {
     this.errorService.clearErrorMessage();
     this.loadingService.setLoading(true);
 
-    if (search === this.currentSearch && pageNumber === this.currentPage) {
-      this.moviessChanged.next(this.currentSearchRespone);
+    if (search === this.currentSearch &&
+        pageNumber === this.currentPage &&
+        this.currentSearchRespone &&
+        !this.currentSearchRespone.Error) {
+      this.moviessChanged.next();
       this.loadingService.setLoading(false);
       return;
     }
@@ -54,10 +72,10 @@ export class MovieService {
     this.http
       .get<OmdbSearchResponse>(environment.OmdbAPIURL, { params } )
       .pipe(
-        catchError(this.handleError),
+        catchError(this.handleErrorSearch),
         tap((resData) => {
           this.currentSearchRespone = resData;
-          this.moviessChanged.next(resData);
+          this.moviessChanged.next();
           if (resData.Error) {
             this.errorService.setErrorMessage(resData.Error);
           } else {
@@ -76,26 +94,42 @@ export class MovieService {
 
     this.errorService.clearErrorMessage();
     this.loadingService.setLoading(true);
+
+    if (id === this.currentDetail && this.currentDetailResponse) {
+      this.detailChanged.next(this.currentDetailResponse);
+      this.loadingService.setLoading(false);
+      return;
+    }
+
     const params = new HttpParams().append('apikey', environment.OmdbAPIKey)
                                    .append('type', environment.OmdbAPIType)
                                    .append('plot', environment.OmdbAPIPlot)
                                    .append('i', id);
 
     this.http
-      .get<OmdbMovieResponse>(environment.OmdbAPIURL, { params } )
+      .get<OmdbMovieDetailResponse>(environment.OmdbAPIURL, { params } )
       .pipe(
-        catchError(this.handleError),
+        catchError(this.handleErrorDetails),
         tap((resData) => {
           this.errorService.clearErrorMessage();
           this.loadingService.setLoading(false);
+          this.detailChanged.next(resData);
         })
       ).subscribe();
   }
 
-  private handleError(errorRes: HttpErrorResponse): Observable<never> {
+  private handleErrorSearch(errorRes: HttpErrorResponse): Observable<never> {
+    return this.handleError(errorRes, this.moviessChanged);
+  }
+
+  private handleErrorDetails(errorRes: HttpErrorResponse): Observable<never> {
+    return this.handleError(errorRes, this.detailChanged);
+  }
+
+  private handleError(errorRes: HttpErrorResponse, subject: httpSubject): Observable<never> {
     const errorMessage = 'An unknown error ocurred';
     this.currentSearchRespone = null;
-    this.moviessChanged.next(null);
+    subject.next(null);
     this.loadingService.setLoading(false);
     this.errorService.setErrorMessage(errorMessage);
     return throwError(errorMessage);

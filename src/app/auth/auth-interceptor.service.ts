@@ -1,17 +1,23 @@
+
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpParams, HttpEvent, HttpResponse } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { take, exhaustMap, dematerialize, mergeMap, materialize, delay } from 'rxjs/operators';
 import { Observable, of, throwError, ObservableInput } from 'rxjs';
-import { MockUsersService } from './mock-users.service';
-import { environment } from '../../environments/environment';
+import { take, exhaustMap, dematerialize, mergeMap, materialize, delay } from 'rxjs/operators';
 
+import { AuthService, AuthBodyRequest } from './auth.service';
+import { environment } from '../../environments/environment';
+import { MockUsersService } from './mock-users.service';
+import { OmdbSearchResponse } from '../movies/interfaces/OmdbSearchResponse';
+import { OmdbMovieDetailResponse } from './../movies/interfaces/OmdbMovieDetailResponse';
 
 interface HttpBodyMock {
   email: string;
   token: string;
   expiresIn: number;
 }
+
+type HttpBodyRequest = AuthBodyRequest | void;
+type HttpBodyResponse = HttpBodyMock | OmdbMovieDetailResponse | OmdbSearchResponse | void;
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
@@ -22,7 +28,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     return throwError({ error: { message } });
   }
 
-  private register(email: string, password: string): Observable<HttpEvent<any>> {
+  private register(email: string, password: string): Observable<HttpEvent<HttpBodyMock>> {
     const userExists = this.mockUsersService.findUser(email, password);
     if (userExists) {
       return this.error('EMAIL_EXISTS');
@@ -35,11 +41,11 @@ export class AuthInterceptorService implements HttpInterceptor {
     });
   }
 
-  private delayDurationRoute(request: HttpRequest<any>): number {
+  private delayDurationRoute(request: HttpRequest<HttpBodyRequest>): number {
     switch (true) {
-      case request.method === 'POST' && request.body.email && request.url === environment.AuthAPIURL + 'SignUp':
+      case request.method === 'POST' && request.body && request.body.email && request.url === environment.AuthAPIURL + 'SignUp':
         return 1000;
-      case request.method === 'POST' && request.body.email && request.url === environment.AuthAPIURL + 'Login':
+      case request.method === 'POST' && request.body && request.body.email && request.url === environment.AuthAPIURL + 'Login':
         return 1000;
       default:
         return 0;
@@ -57,7 +63,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     }
   }
 
-  private authenticate(email: string, password: string): Observable<HttpEvent<any>> {
+  private authenticate(email: string, password: string): Observable<HttpEvent<HttpBodyMock>> {
 
     const userExists = this.mockUsersService.findUser(email, password);
     if (!userExists) {
@@ -70,7 +76,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     });
   }
 
-  private ok(body: HttpBodyMock): Observable<HttpEvent<any>> {
+  private ok(body: HttpBodyMock): Observable<HttpEvent<HttpBodyMock>> {
     return of(new HttpResponse({ status: 200, body }));
   }
 
@@ -79,9 +85,9 @@ export class AuthInterceptorService implements HttpInterceptor {
   }
 
   intercept(
-    request: HttpRequest<any>,
+    request: HttpRequest<HttpBodyRequest>,
     next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  ): Observable<HttpEvent<HttpBodyResponse>> {
 
     return of(null)
       .pipe(mergeMap(nextValue => this.handleRoute(next, request)))

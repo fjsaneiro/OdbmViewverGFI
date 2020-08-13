@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-movies',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MoviesComponent implements OnInit {
 
-  constructor() { }
+  public isFavorites = false;
+
+  constructor(private activatedRoute: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit(): void {
+    this.isFavorites = !this.router.url.startsWith('/movies');
+    this.activatedRoute.url.subscribe(url => {
+      this.isFavorites = !this.router.url.startsWith('/movies');
+    });
   }
 
 }
