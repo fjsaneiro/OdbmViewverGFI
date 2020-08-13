@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class LoadingService {
   public IsLoading = false;
   public loadingChanged = new Subject<boolean>();

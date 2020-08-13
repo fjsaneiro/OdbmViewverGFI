@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class ErrorService {
   public ErrorMessage: string = null;
   public ErrorChanged = new Subject<string>();

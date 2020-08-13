@@ -40,6 +40,11 @@
                       <label>Director :</label> {{ details.Director }}
                     </div>
                 </div>
+                <div class="row" *ngIf="isFavorite">
+                    <div class="col-xs-12">
+                      <label>This is one of your favorite movies!</label>
+                    </div>
+                </div>
               </div>
             </div>
             <div class="col-lg-6">
@@ -70,24 +75,22 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="row">
-
-                        <button
-                            type="button"
-                            class="btn btn-warning"
-                            >Remove Favorites</button>
-                     |
-
-                        <button
-                            type="button"
-                            class="btn btn-success"
-                            >Add Favorites</button>
+                    <button *ngIf="isFavorite"
+                        type="button"
+                        class="btn btn-warning"
+                        (click)="removeFavorite()"
+                        >Remove Favorites</button>
+                    <button *ngIf="!isFavorite"
+                        type="button"
+                        class="btn btn-success"
+                        (click)="addFavorite()"
+                        >Add Favorites</button>
                     |
-
-                        <button
-                            type="button"
-                            class="btn btn-danger"
-                            (click)="navigateBack()"
-                            >Back</button>
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="navigateBack()"
+                        >Back</button>
 
                 </div>
             </div>

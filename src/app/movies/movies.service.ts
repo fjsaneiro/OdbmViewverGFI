@@ -1,3 +1,4 @@
+import { AuthService } from './../auth/auth.service';
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
@@ -12,33 +13,59 @@ import { OmdbSearchResponse } from './interfaces/OmdbSearchResponse';
 
 type httpSubject = Subject<void> | Subject<OmdbMovieDetailResponse>;
 
+interface CurrentSearch {
+  currentText: string;
+  currentPage: number;
+}
+
 @Injectable({providedIn: 'root'})
 export class MovieService {
   constructor(private http: HttpClient,
+              private authService: AuthService,
               private loadingService: LoadingService,
-              private errorService: ErrorService) {}
+              private errorService: ErrorService) {
+      this.authService.user.subscribe(user => {
+        if (!user) {
+          this.currentSearch  = null;
+          this.lastListVieved  = null;
+          this.currentSearchRespone  = null;
+          this.currentDetail  = null;
+          this.currentDetailResponse  = null;
+        }
+      });
+      const json = sessionStorage.getItem('oMDBSearch');
+      if (json) {
+        this.currentSearch =  JSON.parse(json);
+        this.searchMoviesrRepeat();
+      }
+  }
 
-  public moviessChanged = new Subject<void>();
+  public moviesChanged = new Subject<void>();
   public detailChanged = new Subject<OmdbMovieDetailResponse>();
-  public currentSearch: string;
-  public currentPage: number;
+
   private currentSearchRespone: OmdbSearchResponse;
   private currentDetailResponse: OmdbMovieDetailResponse;
   public currentDetail: string;
+  public currentSearch: CurrentSearch;
+  public lastListVieved: string;
 
   public getCurrentSearch(): OmdbSearchResponse {
-    return JSON.parse(JSON.stringify(this.currentSearchRespone));
+    if (this.currentSearchRespone) {
+      return JSON.parse(JSON.stringify(this.currentSearchRespone));
+    } else {
+      return null;
+    }
   }
 
   public searchMoviesrRepeat(): void {
-    if (this.currentSearch && this.currentPage) {
-      this.searchMovies(this.currentSearch, this.currentPage);
+    if (this.currentSearch) {
+      this.searchMovies(this.currentSearch.currentText, this.currentSearch.currentPage);
     }
   }
 
   public searchMoviesPage(pageNumber: number): void {
     if (this.currentSearch) {
-      this.searchMovies(this.currentSearch, pageNumber);
+      this.searchMovies(this.currentSearch.currentText, pageNumber);
     }
   }
 
@@ -51,11 +78,12 @@ export class MovieService {
     this.errorService.clearErrorMessage();
     this.loadingService.setLoading(true);
 
-    if (search === this.currentSearch &&
-        pageNumber === this.currentPage &&
-        this.currentSearchRespone &&
-        !this.currentSearchRespone.Error) {
-      this.moviessChanged.next();
+    if (this.currentSearchRespone &&
+        !this.currentSearchRespone.Error &&
+        this.currentSearch &&
+        search === this.currentSearch.currentText &&
+        pageNumber === this.currentSearch.currentPage) {
+      this.moviesChanged.next();
       this.loadingService.setLoading(false);
       return;
     }
@@ -66,19 +94,22 @@ export class MovieService {
                                    .append('s', search)
                                    .append('page', pageNumber.toString());
 
-    this.currentSearch = search;
-    this.currentPage = pageNumber;
+    this.currentSearch = {
+      currentText: search,
+      currentPage: pageNumber
+    };
     this.currentSearchRespone = null;
     this.http
       .get<OmdbSearchResponse>(environment.OmdbAPIURL, { params } )
       .pipe(
-        catchError(this.handleErrorSearch),
+        catchError(this.handleErrorSearch.bind(this)),
         tap((resData) => {
           this.currentSearchRespone = resData;
-          this.moviessChanged.next();
+          this.moviesChanged.next();
           if (resData.Error) {
             this.errorService.setErrorMessage(resData.Error);
           } else {
+            sessionStorage.setItem('oMDBSearch', JSON.stringify(this.currentSearch));
             this.errorService.clearErrorMessage();
           }
           this.loadingService.setLoading(false);
@@ -109,7 +140,7 @@ export class MovieService {
     this.http
       .get<OmdbMovieDetailResponse>(environment.OmdbAPIURL, { params } )
       .pipe(
-        catchError(this.handleErrorDetails),
+        catchError(this.handleErrorDetails.bind(this)),
         tap((resData) => {
           this.errorService.clearErrorMessage();
           this.loadingService.setLoading(false);
@@ -119,7 +150,7 @@ export class MovieService {
   }
 
   private handleErrorSearch(errorRes: HttpErrorResponse): Observable<never> {
-    return this.handleError(errorRes, this.moviessChanged);
+    return this.handleError(errorRes, this.moviesChanged);
   }
 
   private handleErrorDetails(errorRes: HttpErrorResponse): Observable<never> {
@@ -132,6 +163,7 @@ export class MovieService {
     subject.next(null);
     this.loadingService.setLoading(false);
     this.errorService.setErrorMessage(errorMessage);
+    this.loadingService.setLoading(false);
     return throwError(errorMessage);
   }
 

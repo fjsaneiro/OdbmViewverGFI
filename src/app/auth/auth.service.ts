@@ -41,7 +41,7 @@ export class AuthService {
                   password
                }
         ).pipe(
-            catchError(this.handleError),
+            catchError(this.handleError.bind(this)),
             tap(resData => {
                 this.handleAuthentication(
                     resData.email,
@@ -61,7 +61,7 @@ export class AuthService {
                   password
                }
         ).pipe(
-            catchError(this.handleError),
+            catchError(this.handleError.bind(this)),
             tap((resData: AuthResponseData) => {
                 this.handleAuthentication(
                     resData.email,
@@ -102,6 +102,7 @@ export class AuthService {
             clearTimeout(this.tokenExpirationTimer);
         }
         this.tokenExpirationTimer = null;
+        sessionStorage.clear();
     }
 
     private autoLogout(expirationDuration: number): void {
@@ -136,6 +137,7 @@ export class AuthService {
                 break;
         }
         this.errorService.setErrorMessage(errorMessage);
+        this.loadingService.setLoading(false);
         return throwError(errorMessage);
     }
 }

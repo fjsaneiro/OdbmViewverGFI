@@ -26,6 +26,8 @@ import { HeaderComponent } from './header/header.component';
     AppRoutingModule
   ],
   providers: [
+    ErrorService,
+    LoadingService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

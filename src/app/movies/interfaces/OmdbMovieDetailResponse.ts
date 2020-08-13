@@ -1,6 +1,6 @@
 export interface OmdbMovieDetailResponse {
   Title: string;
-  Year: string;
+  Year: number;
   Rated: string;
   Released: string;
   Runtime: string;

@@ -17,15 +17,15 @@ export class MovieSearchComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private router: Router) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.activatedRoute.url.subscribe(url => {
       if (this.router.url === '/movies') {
-        this.currentSearch = this.movieService.currentSearch;
+        this.currentSearch = this.movieService.currentSearch.currentText;
       }
     });
   }
 
-  onSubmit(form: NgForm): void {
+  public onSubmit(form: NgForm): void {
     if (!form.valid) {
         return;
     }

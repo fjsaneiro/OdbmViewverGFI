@@ -20,7 +20,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private loadingSubscription: Subscription;
   private errorSubscription: Subscription;
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.authService.autoLogin();
     this.isLoading = this.loadignService.IsLoading;
     this.loadingSubscription = this.loadignService.loadingChanged.subscribe(isLoading => {
@@ -31,11 +31,11 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  onHandledError(): void {
+  public onHandledError(): void {
     this.errorService.clearErrorMessage();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     if (this.loadingSubscription) {
       this.loadingSubscription.unsubscribe();
     }

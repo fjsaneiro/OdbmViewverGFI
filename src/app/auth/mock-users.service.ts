@@ -13,7 +13,6 @@ export class MockUsersService {
   }
 
   public findUser(emaiL: string, password: string): boolean {
-
     return !!this.users.find((x) => x.emaiL === emaiL && x.password == password);
   }
 

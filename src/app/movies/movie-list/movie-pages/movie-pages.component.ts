@@ -22,8 +22,8 @@ export class MoviePagesComponent implements OnInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               private router: Router) { }
 
-  ngOnInit(): void {
-    this.subscription = this.movieService.moviessChanged.subscribe(res => {
+  public ngOnInit(): void {
+    this.subscription = this.movieService.moviesChanged.subscribe(res => {
       this.preparePagination();
     });
     this.activatedRoute.url.subscribe(url => {
@@ -42,7 +42,7 @@ export class MoviePagesComponent implements OnInit, OnDestroy {
     }
     this.totalPages = Math.ceil(+res.totalResults / this.pageSize);
     this.showPagination = this.totalPages > 1;
-    this.currentPage = this.movieService.currentPage;
+    this.currentPage = this.movieService.currentSearch.currentPage;
     this.pagesShow = [];
     for (let i = 1; i <= paginationRange; i++) {
       this.addPagination(i);
@@ -61,14 +61,14 @@ export class MoviePagesComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectPage(page: number): void {
+  public selectPage(page: number): void {
     if (this.currentPage === page) {
       return;
     }
     this.movieService.searchMoviesPage(page);
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
