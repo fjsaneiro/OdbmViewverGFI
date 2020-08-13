@@ -4,7 +4,11 @@
 
 export const environment = {
   production: false,
-  AuthAPIURL: 'http://localhost/AuthAPI/'
+  AuthAPIURL: 'http://localhost/AuthAPI/',
+  OmdbAPIURL: 'http://www.omdbapi.com/',
+  OmdbAPIKey: 'f12ba140',
+  OmdbAPIType: 'movie',
+  OmdbAPIPlot: 'full'
 };
 
 /*

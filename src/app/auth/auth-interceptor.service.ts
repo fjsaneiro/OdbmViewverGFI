@@ -22,12 +22,12 @@ export class AuthInterceptorService implements HttpInterceptor {
     return throwError({ error: { message } });
   }
 
-  private register(email: string): Observable<HttpEvent<any>> {
-    const userExists = this.mockUsersService.findUser(email);
+  private register(email: string, password: string): Observable<HttpEvent<any>> {
+    const userExists = this.mockUsersService.findUser(email, password);
     if (userExists) {
       return this.error('EMAIL_EXISTS');
     }
-    this.mockUsersService.addUser(email);
+    this.mockUsersService.addUser(email, password);
     return this.ok({
       email,
       token: 'jwt-token-mock',
@@ -49,17 +49,17 @@ export class AuthInterceptorService implements HttpInterceptor {
   private handleRoute(next: HttpHandler, request: HttpRequest<any>): ObservableInput<any> {
     switch (true) {
       case request.method === 'POST' && request.body.email && request.url === environment.AuthAPIURL + 'SignUp':
-        return this.register(request.body.email);
+        return this.register(request.body.email, request.body.password);
       case request.method === 'POST' && request.body.email && request.url === environment.AuthAPIURL + 'Login':
-        return this.authenticate(request.body.email);
+        return this.authenticate(request.body.email, request.body.password);
       default:
         return next.handle(request);
     }
   }
 
-  private authenticate(email: string): Observable<HttpEvent<any>> {
+  private authenticate(email: string, password: string): Observable<HttpEvent<any>> {
 
-    const userExists = this.mockUsersService.findUser(email);
+    const userExists = this.mockUsersService.findUser(email, password);
     if (!userExists) {
       return this.error('INVALID_PASSWORD_OR_EMAIL');
     }

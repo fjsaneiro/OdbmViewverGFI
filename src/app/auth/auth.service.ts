@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { ErrorService } from './../shared/error.service';
+import { LoadingService } from './../shared/loading.service';
+import { Injectable, ɵConsole } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, BehaviorSubject, Observable } from 'rxjs';
-import { User } from './user.module';
+import { User } from './models/user.model';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { MockUsersService } from './mock-users.service';
@@ -20,9 +22,13 @@ export class AuthService {
 
     constructor(private http: HttpClient,
                 private router: Router,
-                private mockUsersService: MockUsersService) {}
+                private mockUsersService: MockUsersService,
+                private loadingService: LoadingService,
+                private errorService: ErrorService) {}
 
     public signup(email: string, password: string): Observable<AuthResponseData> {
+        this.errorService.clearErrorMessage();
+        this.loadingService.setLoading(true);
         return this.http.post<AuthResponseData>(
                environment.AuthAPIURL +  'SignUp',
                {
@@ -36,10 +42,13 @@ export class AuthService {
                     resData.email,
                     resData.token,
                     resData.expiresIn);
+                this.loadingService.setLoading(false);
             }));
     }
 
     public login(email: string, password: string): Observable<AuthResponseData> {
+        this.errorService.clearErrorMessage();
+        this.loadingService.setLoading(true);
         return this.http.post<AuthResponseData>(
                environment.AuthAPIURL +  'Login',
                {
@@ -53,10 +62,11 @@ export class AuthService {
                     resData.email,
                     resData.token,
                     resData.expiresIn);
+                this.loadingService.setLoading(false);
             }));
     }
 
-    autoLogin(): void {
+    public autoLogin(): void {
       const userData: {
           email: string,
           ptoken: string,
@@ -76,9 +86,6 @@ export class AuthService {
            this.user.next(loadedUser);
            const expirationDuration = new Date(userData.expirationDate).getTime() - new Date().getTime();
            this.autoLogout(expirationDuration);
-           if (!this.mockUsersService.findUser(userData.email)) {
-             this.mockUsersService.addUser(userData.email);
-           }
       }
    }
 
@@ -92,7 +99,7 @@ export class AuthService {
         this.tokenExpirationTimer = null;
     }
 
-    autoLogout(expirationDuration: number): void {
+    private autoLogout(expirationDuration: number): void {
         this.tokenExpirationTimer = setTimeout(() => {
             this.logout();
         }, expirationDuration);
@@ -106,7 +113,7 @@ export class AuthService {
         const expirationDate = new Date(new Date().getTime() + expiresIn * 60 * 1000);
         const user = new User(email, token, expirationDate);
         this.user.next(user);
-        this.autoLogout(expiresIn * 1000);
+        this.autoLogout(expiresIn * 60 * 1000);
         localStorage.setItem('userData', JSON.stringify(user));
     }
 
@@ -123,6 +130,7 @@ export class AuthService {
                 errorMessage = 'This email or password is not valid.';
                 break;
         }
+        this.errorService.setErrorMessage(errorMessage);
         return throwError(errorMessage);
     }
 }

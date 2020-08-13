@@ -1,0 +1,16 @@
+
+<nav *ngIf="showPagination">
+  <ul class="pagination">
+    <li class="page-item" *ngIf="currentPage > 1"><a class="page-link" style="cursor: pointer;" (click)="selectPage(currentPage - 1)">&lt;&lt;</a></li>
+    <li class="page-item" *ngIf="currentPage < totalPages"><a class="page-link" style="cursor: pointer;" (click)="selectPage(currentPage + 1)">&gt;&gt;</a></li>
+    <li class="page-item" *ngIf="currentPage > 1"><a class="page-link" style="cursor: pointer;" (click)="selectPage(1)">First</a></li>
+
+
+    <li class="page-item" *ngFor="let numPage of pagesShow">
+      <a class="page-link" style="cursor: pointer;"  (click)="selectPage(numPage)"> {{ numPage }}</a>
+    </li>
+
+    <li class="page-item" *ngIf="currentPage < totalPages"><a class="page-link" style="cursor: pointer;" (click)="selectPage(totalPages)">Last</a></li>
+
+  </ul>
+</nav>

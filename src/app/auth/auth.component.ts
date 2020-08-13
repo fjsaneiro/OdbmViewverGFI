@@ -12,8 +12,6 @@ import { AlertComponent } from '../shared/alert/alert.component';
 })
 export class AuthComponent implements OnDestroy {
     isLoginMode = true;
-    isLoading = false;
-    error: string = null;
 
     constructor(private authService: AuthService,
                 private router: Router) {}
@@ -26,8 +24,7 @@ export class AuthComponent implements OnDestroy {
         if (!form.valid) {
             return;
         }
-        this.isLoading = true;
-        this.error = null;
+
         const email = form.value.email;
         const password = form.value.password;
 
@@ -40,21 +37,10 @@ export class AuthComponent implements OnDestroy {
         }
 
         authObs.subscribe(resData => {
-            console.log(resData);
-            this.isLoading = false;
-            this.error = null;
             this.router.navigate(['/movies']);
-        }, errorMessage => {
-            console.log(errorMessage);
-            this.error = errorMessage;
-            this.isLoading = false;
         });
 
         form.reset();
-    }
-
-    onHandledError(): void {
-        this.error = null;
     }
 
     ngOnDestroy(): void {

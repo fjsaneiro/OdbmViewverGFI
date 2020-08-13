@@ -20,7 +20,6 @@ export class AuthGuard implements CanActivate {
         return this.authService.user.pipe(
             take(1),
             map(user => {
-                console.log('route ' + state.url);
                 const isAuth = !!user;
 
                 if (state.url === '/auth') {

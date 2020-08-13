@@ -1,3 +1,5 @@
+import { ErrorService } from './shared/error.service';
+import { LoadingService } from './shared/loading.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 

@@ -1,0 +1,20 @@
+<form #searchForm="ngForm" (ngSubmit)="onSubmit(searchForm)">
+    <div class="form-group">
+        <label for="searchtitle">Wich movie do you want?</label>
+        <input
+            type="text"
+            id="searchtitle"
+            class="form-control"
+            ngModel
+            name="searchtitle"
+            required>
+    </div>
+    <div>
+        <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!searchForm.valid">
+            Search
+        </button>
+    </div>
+</form>
