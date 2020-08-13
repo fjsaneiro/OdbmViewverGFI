@@ -1,9 +1,11 @@
 import { Component, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService, AuthResponseData } from './auth.service';
-import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+
+import { AuthService } from './services/auth.service';
 import { AlertComponent } from '../shared/alert/alert.component';
+import { AuthResponseData } from './interfaces/AuthResponseData';
 
 @Component({
     selector: 'app-auth',

@@ -2,7 +2,7 @@ import { ErrorService } from './shared/error.service';
 import { Subscription } from 'rxjs';
 import { LoadingService } from './shared/loading.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from './auth/auth.service';
+import { AuthService } from './auth/services/auth.service';
 
 @Component({
   selector: 'app-root',

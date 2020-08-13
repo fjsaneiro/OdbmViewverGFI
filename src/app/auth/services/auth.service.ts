@@ -1,24 +1,16 @@
-import { ErrorService } from './../shared/error.service';
-import { LoadingService } from './../shared/loading.service';
+
 import { Injectable, ɵConsole } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
-import { throwError, BehaviorSubject, Observable } from 'rxjs';
-import { User } from './models/user.model';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { throwError, BehaviorSubject, Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
+import { ErrorService } from './../../shared/error.service';
+import { LoadingService } from './../../shared/loading.service';
+import { User } from './../models/user.model';
+import { environment } from '../../../environments/environment';
 import { MockUsersService } from './mock-users.service';
-
-export interface AuthResponseData {
-    email: string;
-    expiresIn: number;
-    token: string;
-}
-
-export interface AuthBodyRequest {
-  email: string;
-  password: string;
-}
+import { AuthResponseData } from './../interfaces/AuthResponseData';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -121,6 +113,7 @@ export class AuthService {
         this.user.next(user);
         this.autoLogout(expiresIn * 60 * 1000);
         localStorage.setItem('userData', JSON.stringify(user));
+        sessionStorage.clear();
     }
 
     private handleError(errorRes: HttpErrorResponse): Observable<never> {

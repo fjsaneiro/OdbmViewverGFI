@@ -1,10 +1,9 @@
-import { FavoriteService } from './../favorite.services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { MovieService } from './../movies.service';
+import { MovieService } from './../services/movies.service';
+import { FavoriteService } from './../services/favorite.services';
 import { OmdbMovieResponse } from './../interfaces/OmdbMovieResponse';
 
 @Component({

@@ -1,14 +1,14 @@
-
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpParams, HttpEvent, HttpResponse } from '@angular/common/http';
 import { Observable, of, throwError, ObservableInput } from 'rxjs';
 import { take, exhaustMap, dematerialize, mergeMap, materialize, delay } from 'rxjs/operators';
 
-import { AuthService, AuthBodyRequest } from './auth.service';
-import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 import { MockUsersService } from './mock-users.service';
-import { OmdbSearchResponse } from '../movies/interfaces/OmdbSearchResponse';
-import { OmdbMovieDetailResponse } from './../movies/interfaces/OmdbMovieDetailResponse';
+import { OmdbSearchResponse } from '../../movies/interfaces/OmdbSearchResponse';
+import { OmdbMovieDetailResponse } from './../../movies/interfaces/OmdbMovieDetailResponse';
+import { AuthBodyRequest } from './../interfaces/AuthBodyRequest';
 
 interface HttpBodyMock {
   email: string;

@@ -1,8 +1,8 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { MovieService } from './../../movies.service';
+import { MovieService } from './../../services/movies.service';
 
 @Component({
   selector: 'app-movie-pages',

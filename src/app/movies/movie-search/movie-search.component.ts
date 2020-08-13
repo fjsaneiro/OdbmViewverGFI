@@ -1,9 +1,10 @@
-import { Router, UrlTree, ActivatedRoute } from '@angular/router';
-import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
-import { MovieService } from './../movies.service';
-import { NgForm } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router, UrlTree, ActivatedRoute } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
+
+import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
+import { MovieService } from './../services/movies.service';
 
 @Component({
   selector: 'app-movie-search',

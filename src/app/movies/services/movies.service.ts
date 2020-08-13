@@ -1,22 +1,18 @@
-import { AuthService } from './../auth/auth.service';
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { throwError, Observable, Subscription, Subject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { environment } from './../../environments/environment';
 
-import { ErrorService } from './../shared/error.service';
-import { LoadingService } from './../shared/loading.service';
-import { OmdbMovieDetailResponse } from './interfaces/OmdbMovieDetailResponse';
-import { OmdbSearchResponse } from './interfaces/OmdbSearchResponse';
+import { environment } from './../../../environments/environment';
+import { AuthService } from './../../auth/services/auth.service';
+import { ErrorService } from './../../shared/error.service';
+import { LoadingService } from './../../shared/loading.service';
+import { OmdbMovieDetailResponse } from './../interfaces/OmdbMovieDetailResponse';
+import { OmdbSearchResponse } from './../interfaces/OmdbSearchResponse';
+import { CurrentSearch } from './../interfaces/CurrentSearch';
 
 type httpSubject = Subject<void> | Subject<OmdbMovieDetailResponse>;
-
-interface CurrentSearch {
-  currentText: string;
-  currentPage: number;
-}
 
 @Injectable({providedIn: 'root'})
 export class MovieService {

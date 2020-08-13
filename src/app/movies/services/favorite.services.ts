@@ -1,8 +1,8 @@
-import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { OmdbMovieResponse } from './interfaces/OmdbMovieResponse';
+import { AuthService } from './../../auth/services/auth.service';
+import { OmdbMovieResponse } from './../interfaces/OmdbMovieResponse';
 
 @Injectable({providedIn: 'root'})
 export class FavoriteService {

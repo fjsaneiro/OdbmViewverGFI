@@ -1,13 +1,12 @@
-import { OmdbMovieResponse } from './../interfaces/OmdbMovieResponse';
-import { FavoriteService } from './../favorite.services';
-import { LoadingService } from './../../shared/loading.service';
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { tap, map, exhaustMap } from 'rxjs/operators';
 
-import { MovieService } from './../movies.service';
+import { MovieService } from './../services/movies.service';
+import { FavoriteService } from './../services/favorite.services';
+import { LoadingService } from './../../shared/loading.service';
+import { OmdbMovieResponse } from './../interfaces/OmdbMovieResponse';
 import { OmdbMovieDetailResponse } from './../interfaces/OmdbMovieDetailResponse';
 
 @Component({
